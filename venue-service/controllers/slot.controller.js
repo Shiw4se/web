@@ -1,5 +1,4 @@
-﻿const Venue = require('../models/venue-model');
-const Slot = require('../models/slot.module');
+﻿const { Venue, Slot } = require('../models/index'); // бере з index.js
 
 // Створення нового майданчика
 async function createVenue(data) {
@@ -24,15 +23,26 @@ async function getAllVenues() {
 // Отримання слотів для конкретного майданчика
 async function getSlotsByVenueId(venueId) {
     try {
+        console.log(venueId);
+        // Перевіряємо значення перед тим, як використовувати
+        if (!venueId) {
+            return { status: 400, body: { message: 'Venue ID is required' } };
+        }
+
         const slots = await Slot.findAll({
-            where: { venueId },
-            include: Venue
+            where: { venue_id: venueId },  // Перевіряємо, чи передається правильне значення
+            include: {
+                model: Venue,
+                as: 'venue'
+            }
         });
+
         return { status: 200, body: slots };
     } catch (err) {
         return { status: 500, body: { message: err.message } };
     }
 }
+
 
 async function createSlot(data) {
     try {

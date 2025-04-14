@@ -20,6 +20,7 @@ router.get('/get_all', async (req, res) => {
 
 router.get('/find_by_id/:id', async (req, res) => {
     try {
+
         const response = await sendRPCRequest(VENUE_RPC_QUEUE, {
             action: 'get_slots_by_venue',
             data: { id: req.params.id },
@@ -30,6 +31,7 @@ router.get('/find_by_id/:id', async (req, res) => {
         res.status(500).json({ message: 'Internal error' });
     }
 });
+
 
 
 router.use(authenticateAdmin);
@@ -63,7 +65,7 @@ router.post('/createslot', async (req, res) => {
 });
 
 // Видалення слоту
-router.delete('/deleteslot', async (req, res) => {
+router.delete('/deleteslot/:id', async (req, res) => {
     try {
         const response = await sendRPCRequest(VENUE_RPC_QUEUE, {
             action: 'deleteSlot',
@@ -75,5 +77,6 @@ router.delete('/deleteslot', async (req, res) => {
         res.status(500).json({ message: 'Internal error' });
     }
 });
+
 
 module.exports = router;

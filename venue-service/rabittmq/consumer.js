@@ -18,7 +18,7 @@ async function start() {
         } else if (action === 'get_all') {
             response = await getAllVenues();
         } else if (action === 'get_slots_by_venue') {
-            response = await getSlotsByVenueId(data.venueId);
+            response = await getSlotsByVenueId(data.id);
         } else if (action === 'createSlot') {
             response = await createSlot(data);
         } else if (action === 'deleteSlot') {
