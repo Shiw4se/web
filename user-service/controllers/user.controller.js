@@ -24,4 +24,13 @@ async function login(data) {
     return { status: 200, body: { token } };
 }
 
-module.exports = { register, login };
+async function ValidateUser(user) {
+    let userCandidate = await User.findOne({ where: { id: user.userId } });
+
+    // Повертаємо об'єкт без серіалізації в JSON
+    return userCandidate || null;
+}
+
+
+
+module.exports = { register, login, ValidateUser };

@@ -1,6 +1,7 @@
-﻿const amqp = require('amqplib');
-const { register, login } = require('../controllers/user.controller');
-require('dotenv').config();
+﻿require('dotenv').config();
+const amqp = require('amqplib');
+const { register, login, ValidateUser } = require('../controllers/user.controller');
+
 
 async function start() {
     const connection = await amqp.connect(process.env.RABBITMQ_URL);
@@ -10,6 +11,8 @@ async function start() {
     console.log(`[x] Waiting for RPC requests on ${process.env.RPC_QUEUE}`);
 
     channel.consume(process.env.RPC_QUEUE, async (msg) => {
+
+
         const { action, data } = JSON.parse(msg.content.toString());
 
         let response;
@@ -17,7 +20,10 @@ async function start() {
             response = await register(data);
         } else if (action === 'login') {
             response = await login(data);
-        } else {
+        }else if (action === 'validate_user') {
+            response = await ValidateUser(data);
+        }
+        else {
             response = { status: 400, body: { message: 'Unknown action' } };
         }
 

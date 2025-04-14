@@ -5,7 +5,7 @@ require('dotenv').config();
 const router = express.Router();
 const USER_RPC_QUEUE = process.env.USER_RPC_QUEUE;
 
-router.post('/users/register', async (req, res) => {
+router.post('/register', async (req, res) => {
     try {
         const response = await sendRPCRequest(USER_RPC_QUEUE, {
             action: 'register',
@@ -18,7 +18,7 @@ router.post('/users/register', async (req, res) => {
     }
 });
 
-router.post('/users/login', async (req, res) => {
+router.post('/login', async (req, res) => {
     try {
         const response = await sendRPCRequest(USER_RPC_QUEUE, {
             action: 'login',
