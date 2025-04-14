@@ -1,6 +1,6 @@
 ﻿require('dotenv').config();
 const express = require('express');
-const { sendRPCRequest, authenticateUser } = require('../rabbitmq/rpcClient');
+const { sendRPCRequest, authenticateUser, authenticateAdmin} = require('../rabbitmq/rpcClient');
 
 const router = express.Router();
 const VENUE_RPC_QUEUE = process.env.VENUE_RPC_QUEUE;
@@ -32,7 +32,7 @@ router.get('/find_by_id/:id', async (req, res) => {
 });
 
 
-router.use(authenticateUser);
+router.use(authenticateAdmin);
 
 // Створення нового майданчика
 router.post('/create', async (req, res) => {

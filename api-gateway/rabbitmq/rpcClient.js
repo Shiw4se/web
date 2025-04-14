@@ -54,6 +54,38 @@ async function authenticateUser(req, res, next) {
         }
 
         // Якщо перевірка пройшла, перевіряємо роль
+        if (userResponse.role !== 'user') {
+            return res.status(403).json({ msg: "Forbidden: You are not user" });
+        }
+
+        // Якщо все ок, додаємо user в req
+        req.user = userResponse;
+        next();
+    } catch (error) {
+        console.error("JWT or RPC Error:", error);
+        return res.status(401).json({ msg: "Unauthorized: Invalid token" });
+    }
+}
+
+async function authenticateAdmin(req, res, next) {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        return res.status(401).json({ msg: "Unauthorized: No token provided" });
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const userId = decoded.id;
+
+        const userResponse = await validateUserWithRPC(userId);
+
+        if (!userResponse || userResponse.success !== true) {
+            return res.status(401).json({ msg: "Unauthorized: Invalid token or user data" });
+        }
+
+        // Якщо перевірка пройшла, перевіряємо роль
         if (userResponse.role !== 'admin') {
             return res.status(403).json({ msg: "Forbidden: You are not an admin" });
         }
@@ -66,6 +98,8 @@ async function authenticateUser(req, res, next) {
         return res.status(401).json({ msg: "Unauthorized: Invalid token" });
     }
 }
+
+
 
 async function validateUserWithRPC(userId) {
     return new Promise(async (resolve, reject) => {
@@ -114,4 +148,4 @@ async function validateUserWithRPC(userId) {
     });
 }
 
-module.exports = { connectRabbitMQ, sendRPCRequest, authenticateUser };
+module.exports = { connectRabbitMQ, sendRPCRequest, authenticateUser, authenticateAdmin };

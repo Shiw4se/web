@@ -27,7 +27,6 @@ async function login(data) {
 async function ValidateUser(user) {
     let userCandidate = await User.findOne({ where: { id: user.userId } });
 
-    // Повертаємо об'єкт без серіалізації в JSON
     return userCandidate || null;
 }
 
