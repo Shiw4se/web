@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const { connectRabbitMQ, authenticateUser, authenticateAdmin  } = require('./rabbitmq/rpcClient');
 const userRoutes = require('./routes/user.routes');
 const slotRoutes = require('./routes/slots.routes');
+const BookingRoutes = require('./routes/booking.routes');
 
 dotenv.config();
 const app = express();
@@ -11,6 +12,7 @@ app.use(express.json());
 app.use('/api/user', userRoutes);
 app.use('/api/venue', slotRoutes);
 app.use('/api/venue/admin', authenticateAdmin, slotRoutes);
+app.use('/api/bookings', authenticateUser, BookingRoutes)
 
 const PORT = process.env.PORT || 3000;
 

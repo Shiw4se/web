@@ -49,7 +49,7 @@ async function authenticateUser(req, res, next) {
 
         const userResponse = await validateUserWithRPC(userId);
 
-        if (!userResponse || userResponse.success !== true) {
+        if (!userResponse || userResponse.success !== false) {
             return res.status(401).json({ msg: "Unauthorized: Invalid token or user data" });
         }
 
@@ -126,7 +126,7 @@ async function validateUserWithRPC(userId) {
                             resolve(parsed);
                         } else {
                             parsed.success = false;  // Якщо не admin, success: false
-                            reject(new Error("User is not an admin"));
+                            resolve(parsed);
                         }
                     }
                 },
