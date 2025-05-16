@@ -19,6 +19,8 @@ router.post('/register', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
+    console.log('Login request body:', req.body);  // <-- тут лог для перевірки вхідних даних
+
     try {
         const response = await sendRPCRequest(USER_RPC_QUEUE, {
             action: 'login',
@@ -30,5 +32,6 @@ router.post('/login', async (req, res) => {
         res.status(500).json({ message: 'Internal error' });
     }
 });
+
 
 module.exports = router;

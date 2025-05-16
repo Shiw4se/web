@@ -11,6 +11,6 @@ sequelize.sync().then(() => {
     console.log('DB synced');
     app.listen(process.env.PORT, async () => {
         console.log(`User Service running on port ${process.env.PORT}`);
-        await start();
+        start();
     });
 });

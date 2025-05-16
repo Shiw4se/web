@@ -1,5 +1,5 @@
 ﻿const amqp = require('amqplib');
-const { createVenue, getAllVenues, getSlotsByVenueId,createSlot,deleteSlot} = require('../controllers/slot.controller');
+const { createVenue, getAllVenues, getSlotsByVenueId,createSlot,deleteSlot,deleteVenue} = require('../controllers/slot.controller');
 require('dotenv').config();
 
 async function start() {
@@ -19,6 +19,9 @@ async function start() {
             response = await getAllVenues();
         } else if (action === 'get_slots_by_venue') {
             response = await getSlotsByVenueId(data.id);
+        }else if (action === 'deleteVenue') {
+            console.log('[RPC] Отримано запит на видалення майданчика з ID:', data.id);
+            response = await deleteVenue(data.id);
         } else if (action === 'createSlot') {
             response = await createSlot(data);
         } else if (action === 'deleteSlot') {

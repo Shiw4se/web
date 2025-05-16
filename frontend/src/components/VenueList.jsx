@@ -1,10 +1,15 @@
 ﻿import React, { useEffect, useState } from 'react';
-import './VenueList.css';  // Імпортуємо стилі
+import './VenueList.css';
 
 const VenueList = () => {
     const [venues, setVenues] = useState([]);
     const [filtered, setFiltered] = useState([]);
     const [typeFilter, setTypeFilter] = useState('');
+    const [showMenu, setShowMenu] = useState(false);
+
+    const [isAdmin, setIsAdmin] = useState(false);
+    const [showLoginForm, setShowLoginForm] = useState(false);
+    const [loginData, setLoginData] = useState({ email: '', password: '' });
 
     const [editingVenue, setEditingVenue] = useState(null);
     const [formData, setFormData] = useState({ name: '', location: '', type: '' });
@@ -22,14 +27,44 @@ const VenueList = () => {
             .catch(err => console.error('Error fetching venues:', err));
     }, []);
 
-    const handleFilter = (e) => {
-        const value = e.target.value;
-        setTypeFilter(value);
-        if (value === '') {
+    const uniqueTypes = [...new Set(venues.map(v => v.type))];
+
+    const handleTypeSelect = (type) => {
+        setTypeFilter(type);
+        setShowMenu(false);
+        if (type === '') {
             setFiltered(venues);
         } else {
-            setFiltered(venues.filter(v => v.type.toLowerCase().includes(value.toLowerCase())));
+            setFiltered(venues.filter(v => v.type.toLowerCase().includes(type.toLowerCase())));
         }
+    };
+
+    const handleLoginChange = (e) => {
+        console.log('login input change:', e.target.name, e.target.value);
+        setLoginData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    };
+
+    const handleLogin = (e) => {
+        e.preventDefault();
+        fetch('/api/user/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(loginData)
+        })
+            .then(res => {
+                if (!res.ok) throw new Error(`Login failed: ${res.status}`);
+                return res.json();
+            })
+            .then(data => {
+                localStorage.setItem('token', data.token);
+                setIsAdmin(true);
+                setShowLoginForm(false);
+            })
+            .catch(err => alert('Помилка входу: ' + err.message));
+    };
+
+    const handleChange = (e) => {
+        setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
     };
 
     const handleEditClick = (venue) => {
@@ -41,16 +76,16 @@ const VenueList = () => {
         });
     };
 
-    const handleChange = (e) => {
-        setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
-    };
-
     const handleSubmit = (e) => {
         e.preventDefault();
+        const token = localStorage.getItem('token');
 
         fetch(`/api/venue/update/${editingVenue.id}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
             body: JSON.stringify(formData)
         })
             .then(res => {
@@ -66,16 +101,98 @@ const VenueList = () => {
             .catch(err => console.error('Update failed:', err));
     };
 
+    const handleAdd = () => {
+        const token = localStorage.getItem('token');
+
+        fetch('/api/venue/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(formData)
+        })
+            .then(res => {
+                if (!res.ok) throw new Error(`Create failed with status ${res.status}`);
+                return res.json();
+            })
+            .then(newVenue => {
+                const updatedList = [...venues, newVenue];
+                setVenues(updatedList);
+                setFiltered(updatedList);
+                setFormData({ name: '', location: '', type: '' });
+            })
+            .catch(err => console.error('Create failed:', err));
+    };
+
+    const handleDelete = (venueId) => {
+        const token = localStorage.getItem('token');
+
+        fetch(`/api/venue/delete/${venueId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+            .then(res => {
+                if (!res.ok) throw new Error(`Delete failed with status ${res.status}`);
+                setVenues(venues.filter(v => v.id !== venueId));
+                setFiltered(filtered.filter(v => v.id !== venueId));
+            })
+            .catch(err => console.error('Delete failed:', err));
+    };
+
     return (
         <div className="container">
-            <h2 className="header">Майданчики</h2>
-            <input
-                type="text"
-                placeholder="Фільтр за типом"
-                value={typeFilter}
-                onChange={handleFilter}
-                className="filterInput"
-            />
+            <div className="headerRow">
+                <h2 className="header">Майданчики</h2>
+                <button className="adminLoginButton" onClick={() => setShowLoginForm(prev => !prev)}>
+                    {isAdmin ? 'Вийти' : 'Увійти як адмін'}
+                </button>
+            </div>
+
+            {showLoginForm && !isAdmin && (
+                <form className="form" onSubmit={handleLogin}>
+                    <input
+                        type="text"
+                        name="email"
+                        placeholder="Email"
+                        value={loginData.email || ''}
+                        onChange={handleLoginChange}
+                        required
+                        className="input"
+                    />
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Пароль"
+                        value={loginData.password || ''}
+                        onChange={handleLoginChange}
+                        required
+                        className="input"
+                    />
+                    <button type="submit" className="saveButton">Увійти</button>
+                </form>
+            )}
+
+
+            <div className="dropdownWrapper">
+                <button className="dropdownButton" onClick={() => setShowMenu(prev => !prev)}>
+                    {typeFilter ? `Фільтр: ${typeFilter}` : 'Фільтр за типом'} ⌄
+                </button>
+
+                {showMenu && (
+                    <ul className="dropdownMenu">
+                        {uniqueTypes.map(type => (
+                            <li key={type} onClick={() => handleTypeSelect(type)}>
+                                {type}
+                            </li>
+                        ))}
+                        <li onClick={() => handleTypeSelect('')}>Очистити фільтр</li>
+                    </ul>
+                )}
+            </div>
+
             <ul className="venueList">
                 {filtered.map(venue => (
                     <li key={venue.id} className="venueItem">
@@ -83,46 +200,26 @@ const VenueList = () => {
                             <div className="venueName">{venue.name}</div>
                             <div className="venueDetails">{venue.location} — <em>{venue.type}</em></div>
                         </div>
-                        <button
-                            className="editButton"
-                            onClick={() => handleEditClick(venue)}
-                        >
-                            Редагувати
-                        </button>
+                        {isAdmin && (
+                            <div className="adminControls">
+                                <button className="deleteButton" onClick={() => handleDelete(venue.id)}>Видалити</button>
+                            </div>
+                        )}
                     </li>
                 ))}
             </ul>
 
-            {editingVenue && (
-                <form className="form" onSubmit={handleSubmit}>
-                    <h3 className="formHeader">Редагування майданчика</h3>
-                    <input
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        placeholder="Назва"
-                        className="input"
-                        required
-                    />
-                    <input
-                        name="location"
-                        value={formData.location}
-                        onChange={handleChange}
-                        placeholder="Локація"
-                        className="input"
-                        required
-                    />
-                    <input
-                        name="type"
-                        value={formData.type}
-                        onChange={handleChange}
-                        placeholder="Тип"
-                        className="input"
-                        required
-                    />
+            {isAdmin && (
+                <form className="form" onSubmit={editingVenue ? handleSubmit : (e) => { e.preventDefault(); handleAdd(); }}>
+                    <h3 className="formHeader">{editingVenue ? 'Редагувати майданчик' : 'Додати новий майданчик'}</h3>
+                    <input name="name" value={formData.name || ''} onChange={handleChange} placeholder="Назва" className="input" required />
+                    <input name="location" value={formData.location || ''} onChange={handleChange} placeholder="Локація" className="input" required />
+                    <input name="type" value={formData.type || ''} onChange={handleChange} placeholder="Тип" className="input" required />
                     <div className="buttonGroup">
-                        <button type="submit" className="saveButton">Зберегти</button>
-                        <button type="button" className="cancelButton" onClick={() => setEditingVenue(null)}>Скасувати</button>
+                        <button type="submit" className="saveButton">{editingVenue ? 'Зберегти' : 'Додати'}</button>
+                        {editingVenue && (
+                            <button type="button" className="cancelButton" onClick={() => setEditingVenue(null)}>Скасувати</button>
+                        )}
                     </div>
                 </form>
             )}

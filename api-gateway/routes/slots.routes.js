@@ -64,6 +64,21 @@ router.post('/createslot', async (req, res) => {
     }
 });
 
+// Видалення майданчика
+router.delete('/delete/:id', async (req, res) => {
+    try {
+        const response = await sendRPCRequest(VENUE_RPC_QUEUE, {
+            action: 'deleteVenue',
+            data: { id: req.params.id },
+        });
+        res.status(response.status).json(response.body);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Internal error' });
+    }
+});
+
+
 // Видалення слоту
 router.delete('/deleteslot/:id', async (req, res) => {
     try {

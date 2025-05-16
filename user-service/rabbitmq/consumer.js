@@ -12,7 +12,7 @@ async function start() {
 
     channel.consume(process.env.RPC_QUEUE, async (msg) => {
 
-
+        channel.ack(msg);
         const { action, data } = JSON.parse(msg.content.toString());
 
         let response;
@@ -33,7 +33,7 @@ async function start() {
             { correlationId: msg.properties.correlationId }
         );
 
-        channel.ack(msg);
+
     });
 }
 

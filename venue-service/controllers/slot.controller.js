@@ -20,6 +20,24 @@ async function getAllVenues() {
     }
 }
 
+async function deleteVenue(id) {
+    try {
+        const venue = await Venue.findByPk(id);
+        if (!venue) {
+
+            return { status: 404, body: { message: 'Venue not found' } };
+        }
+
+        await venue.destroy();
+
+        return { status: 200, body: { message: 'Venue deleted' } };
+    } catch (err) {
+        return { status: 500, body: { message: err.message } };
+    }
+}
+
+
+
 // Отримання слотів для конкретного майданчика
 async function getSlotsByVenueId(venueId) {
     try {
@@ -71,6 +89,7 @@ module.exports = {
     createVenue,
     getAllVenues,
     getSlotsByVenueId,
+    deleteVenue,
     createSlot,
     deleteSlot,
 };
