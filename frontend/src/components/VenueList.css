@@ -1,0 +1,122 @@
+﻿/* VenueList.css */
+
+.container {
+    max-width: 700px;
+    margin: 30px auto;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 20px;
+    background-color: #f5f7fa;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.header {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.filterInput {
+    width: 100%;
+    padding: 10px 15px;
+    font-size: 16px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+}
+
+.venueList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.venueItem {
+    background-color: white;
+    padding: 15px 20px;
+    margin-bottom: 12px;
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.venueInfo {
+    max-width: 80%;
+}
+
+.venueName {
+    font-weight: 600;
+    font-size: 18px;
+    margin-bottom: 4px;
+    color: #222;
+}
+
+.venueDetails {
+    font-size: 14px;
+    color: #555;
+}
+
+.editButton {
+    background-color: #007bff;
+    border: none;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.editButton:hover {
+    background-color: #0056b3;
+}
+
+.form {
+    margin-top: 30px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.formHeader {
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.input {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 16px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+}
+
+.buttonGroup {
+    display: flex;
+    justify-content: space-between;
+}
+
+.saveButton {
+    background-color: #28a745;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.cancelButton {
+    background-color: #dc3545;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
