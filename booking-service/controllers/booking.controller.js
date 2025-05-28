@@ -1,5 +1,6 @@
 const { Booking } = require('../models/index');
 const { Slot } = require('../../venue-service/models/index');
+const {Venue} = require("../models");
 
 async function createBooking(data) {
 
@@ -26,32 +27,60 @@ async function createBooking(data) {
     }
 }
 
+
 // GET /bookings/:userId — отримання всіх бронювань користувача
 async function getBookingsByUser(userId) {
-
     try {
-        const bookings = await Booking.findAll({ where: { user_id: userId } });
+        const bookings = await Booking.findAll({
+            where: { user_id: userId },
+            include: [
+                {
+                    model: Venue,
+                    as: 'venue',
+                    attributes: ['name'],
+                },
+                {
+                    model: Slot,
+                    as: 'slot',
+                    attributes: ['start_time', 'end_time'] // можна додати якщо треба
+                }
+            ]
+        });
+
         return { status: 200, body: bookings };
     } catch (err) {
         return { status: 500, body: { message: 'Error fetching bookings', error: err.message } };
     }
 }
 
-// DELETE /bookings/:bookingId — скасування бронювання
+
 async function cancelBooking(bookingId) {
     try {
         const booking = await Booking.findByPk(bookingId);
+
         if (!booking) {
             return { status: 404, body: { message: 'Booking not found' } };
         }
 
-        await booking.destroy();
+        // Знайти слот, пов’язаний з цим бронюванням
+        const slot = await Slot.findByPk(booking.slot_id);
+
+        // Оновити статус бронювання
+        booking.status = 'cancelled';
+        await booking.save();
+
+        // Звільнити слот
+        if (slot) {
+            slot.is_available = true;
+            await slot.save();
+        }
 
         return { status: 200, body: { message: 'Booking cancelled successfully' }};
     } catch (err) {
         return { status: 500, body: { message: 'Error cancelling booking', error: err.message } };
     }
 }
+
 
 module.exports = {
     createBooking,

@@ -1,6 +1,7 @@
 ﻿const express = require('express');
 const { sendRPCRequest } = require('../rabbitmq/rpcClient');
 require('dotenv').config();
+const jwt = require('jsonwebtoken');
 
 const router = express.Router();
 const USER_RPC_QUEUE = process.env.USER_RPC_QUEUE;
@@ -32,6 +33,24 @@ router.post('/login', async (req, res) => {
         res.status(500).json({ message: 'Internal error' });
     }
 });
+
+const authenticateAny = (req, res, next) => {
+    const auth = req.headers.authorization?.split(' ')[1];
+    if (!auth) return res.status(401).json({ message: 'Token not provided' });
+    try {
+        req.user = jwt.verify(auth, process.env.JWT_SECRET);
+        next();
+    } catch {
+        res.status(403).json({ message: 'Invalid token' });
+    }
+};
+
+// єдиний роут для профілю
+router.get('/profile', authenticateAny, (req, res) => {
+    res.json(req.user);
+});
+
+
 
 
 module.exports = router;

@@ -20,15 +20,28 @@ async function login(data) {
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) return { status: 401, body: { message: 'Invalid credentials' } };
 
-    const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET);
+
+    const token = jwt.sign(
+        { id: user.id, email: user.email, role: user.role },
+        process.env.JWT_SECRET
+    );
+
     return { status: 200, body: { token } };
 }
 
-async function ValidateUser(user) {
-    let userCandidate = await User.findOne({ where: { id: user.userId } });
 
-    return userCandidate || null;
+async function ValidateUser(user) {
+    const userCandidate = await User.findOne({ where: { id: user.userId } });
+
+    if (!userCandidate) return null;
+
+    return {
+        id: userCandidate.id,
+        email: userCandidate.email,
+        role: userCandidate.role
+    };
 }
+
 
 
 

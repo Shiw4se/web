@@ -1,19 +1,20 @@
-﻿/* VenueList.css */
-
-.container {
+﻿.container {
     max-width: 700px;
     margin: 30px auto;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     padding: 20px;
-    background-color: #f5f7fa;
+    background-color: #f9fafb;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
 }
 
 .header {
     text-align: center;
-    color: #333;
+    color: #2c3e50;
     margin-bottom: 20px;
+    font-weight: 700;
+    font-size: 24px;
 }
 
 .filterInput {
@@ -24,11 +25,18 @@
     border: 1px solid #ccc;
     margin-bottom: 20px;
     box-sizing: border-box;
+    transition: border-color 0.2s ease;
+}
+
+.filterInput:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0,123,255,0.5);
 }
 
 .venueList {
     list-style: none;
-    padding: 0;
+    padding-left: 0;
     margin: 0;
 }
 
@@ -40,7 +48,12 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    transition: box-shadow 0.2s ease;
+}
+
+.venueItem:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 .venueInfo {
@@ -64,8 +77,9 @@
     border: none;
     color: white;
     padding: 8px 14px;
-    border-radius: 5px;
+    border-radius: 6px;
     cursor: pointer;
+    font-weight: 600;
     transition: background-color 0.3s ease;
 }
 
@@ -83,7 +97,9 @@
 
 .formHeader {
     margin-bottom: 15px;
-    color: #333;
+    color: #2c3e50;
+    font-weight: 700;
+    font-size: 20px;
 }
 
 .input {
@@ -94,11 +110,19 @@
     border: 1px solid #ccc;
     margin-bottom: 15px;
     box-sizing: border-box;
+    transition: border-color 0.2s ease;
+}
+
+.input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0,123,255,0.5);
 }
 
 .buttonGroup {
     display: flex;
     justify-content: space-between;
+    gap: 10px;
 }
 
 .saveButton {
@@ -109,6 +133,11 @@
     border-radius: 6px;
     cursor: pointer;
     font-weight: 600;
+    transition: background-color 0.3s ease;
+}
+
+.saveButton:hover {
+    background-color: #218838;
 }
 
 .cancelButton {
@@ -119,7 +148,13 @@
     border-radius: 6px;
     cursor: pointer;
     font-weight: 600;
+    transition: background-color 0.3s ease;
 }
+
+.cancelButton:hover {
+    background-color: #c82333;
+}
+
 .dropdownWrapper {
     position: relative;
     display: inline-block;
@@ -129,13 +164,29 @@
 .dropdownButton {
     padding: 10px 15px;
     font-size: 16px;
-    background-color: #007bff;
+    background-color: #c82333;
     color: white;
     border: none;
     border-radius: 6px;
     cursor: pointer;
     transition: background-color 0.2s ease;
 }
+
+.registerButton {
+    padding: 0.5rem 1rem;
+    background-color: #c82333;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.registerButton:hover {
+    background-color: #0056b3; /* Темніший синій при наведенні */
+}
+
 
 .dropdownButton:hover {
     background-color: #0056b3;
@@ -177,6 +228,7 @@
         transform: translateY(0);
     }
 }
+
 .headerRow {
     display: flex;
     justify-content: space-between;

@@ -111,27 +111,25 @@ async function validateUserWithRPC(userId) {
                 replyQueue.queue,
                 (msg) => {
                     if (msg.properties.correlationId === correlationId) {
-
-                        let parsed;
+                        let parsed = null;
                         try {
                             parsed = JSON.parse(msg.content.toString());
                         } catch (err) {
-                            reject(new Error("Failed to parse response"));
-                            return;
+                            return reject(new Error("Failed to parse response"));
                         }
 
-                        // Перевірка лише на роль "admin"
-                        if (parsed && parsed.role === 'admin') {
-                            parsed.success = true;  // Якщо роль admin, success: true
-                            resolve(parsed);
-                        } else {
-                            parsed.success = false;  // Якщо не admin, success: false
-                            resolve(parsed);
+                        if (!parsed) {
+                            return resolve({ success: false });
                         }
+
+                        parsed.success = parsed.role === 'admin';
+
+                        resolve(parsed);
                     }
                 },
                 { noAck: true }
             );
+
 
             const payload = {
                 action: "validate_user",

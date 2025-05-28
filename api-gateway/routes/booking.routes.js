@@ -9,6 +9,7 @@ router.use(authenticateUser);
 
 router.post('/create', async (req, res) => {
     try {
+        console.log('Booking create body:', req.body);
         const response = await sendRPCRequest(BOOKING_RPC_QUEUE, {
             action: 'create',
             data: req.body,
@@ -19,6 +20,8 @@ router.post('/create', async (req, res) => {
         res.status(500).json({ message: 'Internal error' });
     }
 });
+
+
 
 router.get('/:userId', async (req, res) => {
     try {
