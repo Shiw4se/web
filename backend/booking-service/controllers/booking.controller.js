@@ -1,5 +1,5 @@
-const { Booking } = require('../models/index');
-const { Slot } = require('../../venue-service/models/index');
+const { Booking } = require('../models');
+const { Slot } = require('../../venue-service/models');
 const {Venue} = require("../models");
 
 async function createBooking(data) {

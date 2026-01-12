@@ -3,7 +3,8 @@ import styles from './UserProfile.module.css';
 import { format } from 'date-fns';
 import { uk } from 'date-fns/locale';
 
-const UserProfile = () => {
+
+const UserProfile = ({ setIsUserLoggedIn, setView }) => {
     const [user, setUser] = useState(null);
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -33,19 +34,22 @@ const UserProfile = () => {
 
     const cancelBooking = (bookingId) => {
         if (!window.confirm('Ви впевнені, що хочете скасувати це бронювання?')) return;
-
         const token = localStorage.getItem('token');
         fetch(`/api/bookings/${bookingId}`, {
             method: 'DELETE',
             headers: { Authorization: `Bearer ${token}` },
         })
-            .then(res => res.ok ? res.json() : Promise.reject('Не вдалося скасувати бронювання'))
-            .then(updated => {
-                setBookings(prev => prev.map(b =>
-                    b.id === bookingId ? { ...b, status: 'cancelled' } : b
-                ));
+            .then(res => res.ok ? res.json() : Promise.reject('Помилка'))
+            .then(() => {
+                setBookings(prev => prev.map(b => b.id === bookingId ? { ...b, status: 'cancelled' } : b));
             })
             .catch(err => alert(err));
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        setIsUserLoggedIn(false);
+        setView('venues');
     };
 
     if (loading) return <p className={styles.header}>Завантаження...</p>;
@@ -53,8 +57,18 @@ const UserProfile = () => {
 
     return (
         <div className={styles.container}>
-            <h2 className={styles.header}>Профіль користувача</h2>
-            <p>Email: {user.email}</p>
+            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                <h2 className={styles.header}>Профіль користувача</h2>
+                <button
+                    onClick={handleLogout}
+                    style={{backgroundColor: '#ff4d4f', color: 'white', padding: '5px 15px', border: 'none', borderRadius: '4px', cursor: 'pointer'}}
+                >
+                    Вийти з акаунту
+                </button>
+            </div>
+
+            <p><strong>Email:</strong> {user.email}</p>
+            <p><strong>Ім'я:</strong> {user.name}</p>
 
             <h3 className={styles.header}>Історія бронювань</h3>
             {bookings.length === 0 ? (
@@ -65,7 +79,6 @@ const UserProfile = () => {
                         <li key={booking.id} className={styles.bookingItem}>
                             <div className={styles.bookingInfo}>
                                 <p><strong>Майданчик:</strong> {booking.venue?.name}</p>
-
                                 <p>
                                     <strong>Слот:</strong>{' '}
                                     {format(new Date(booking.start_time), 'd MMMM yyyy, HH:mm', { locale: uk })}
@@ -90,7 +103,6 @@ const UserProfile = () => {
                                     Скасувати бронювання
                                 </button>
                             )}
-
                         </li>
                     ))}
                 </ul>

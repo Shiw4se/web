@@ -1,7 +1,7 @@
 ﻿require('dotenv').config();
 const express = require('express');
 const { sequelize } = require('./models');
-const { start } = require('./rabittmq/consumer');
+const { start } = require('./rabitmq/consumer');
 
 
 const app = express();

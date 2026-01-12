@@ -1,4 +1,4 @@
-﻿const { Venue, Slot } = require('../models/index'); // бере з index.js
+﻿const { Venue, Slot } = require('../models'); // бере з index.js
 
 // Створення нового майданчика
 async function createVenue(data) {
